@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Community{% endblock %}
+
+{% block content %}
+<div class="community-container mt-5">
+  <h2 class="text-center mb-4">🌍 Our Community</h2>
+
+  {% if profiles %}
+    <div class="profile-grid">
+      {% for profile in profiles %}
+        <div class="profile-card">
+          <a href="{% url 'public_profile' profile.user.username %}">
+            {% if profile.profile_pic %}
+              <img src="{{ profile.profile_pic.url }}" alt="{{ profile.user.username }}" class="profile-thumb">
+            {% else %}
+              <img src="/static/default-avatar.png" alt="Default Avatar" class="profile-thumb">
+            {% endif %}
+          </a>
+          <h5>{{ profile.user.username }}</h5>
+          <p>{{ profile.bio|truncatewords:15 }}</p>
+          <a href="{% url 'public_profile' profile.user.username %}" class="btn btn-outline-primary btn-sm">View Profile</a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="text-center text-muted">No users have updated their profiles yet.</p>
+  {% endif %}
+</div>
+
+<style>
+  .community-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+  }
+
+  .profile-card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-thumb {
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+  }
+
+  .profile-card h5 {
+    margin: 10px 0 5px;
+    color: #2c3e50;
+  }
+
+  .profile-card p {
+    color: #555;
+    font-size: 0.9rem;
+  }
+</style>
+{% endblock %}

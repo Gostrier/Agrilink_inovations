@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Preview Document – AgriAI Decision Support{% endblock %}
+
+{% block content %}
+<style>
+  body { background-color: #f9fafb; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  .preview-container { max-width: 900px; margin: 3rem auto; background: #fff; padding: 2rem; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb; }
+  .preview-container h2 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.5rem; color: #111827; }
+  .preview-container p { margin-bottom: 1rem; font-size: 0.9rem; color: #6b7280; }
+  iframe, pre, img { width: 100%; border: 1px solid #e5e7eb; border-radius: 12px; margin-bottom: 1.5rem; background: #f9fafb; }
+  iframe { height: 500px; }
+  pre { padding: 1rem; font-size: 0.9rem; white-space: pre-wrap; color: #374151; }
+  .actions { display: flex; justify-content: space-between; margin-top: 2rem; align-items: center; }
+  .actions a { font-size: 0.9rem; padding: 0.6rem 1.2rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.2s, transform 0.2s; }
+  .actions .back { color: #2563eb; text-decoration: underline; padding: 0; }
+  .actions .download { background: #2563eb; color: white; }
+  .actions .download:hover { background: #1e40af; transform: scale(1.02); }
+  .meta { color:#6b7280; font-size:0.85rem; }
+
+  .ai-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .ai-buttons button {
+    flex: 1;
+    background: linear-gradient(to right,#16a34a,#22c55e);
+    color: white;
+    padding: 0.6rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .ai-buttons button:hover {
+    background: linear-gradient(to right,#15803d,#16a34a);
+    transform: scale(1.03);
+  }
+</style>
+
+<div class="preview-container">
+  <h2>{{ note.title }}</h2>
+  <p>Uploaded by: {{ note.uploaded_by.username }} | {{ note.uploaded_at|date:"M d, Y" }}</p>
+
+  <!-- File preview -->
+  {% if note.file.name|lower|slice:"-4:" == ".pdf" %}
+    <iframe src="{{ note.file.url }}"></iframe>
+  
+  {% elif note.file.name|lower|slice:"-4:" == ".txt" or note.file.name|lower|slice:"-5:" == ".docx" or note.file.name|lower|slice:"-4:" == ".msg" %}
+    <pre>{{ extracted_text|safe }}</pre>
+  
+  {% elif note.file.name|lower|slice:"-4:" == ".png" or note.file.name|lower|slice:"-4:" == ".jpg" or note.file.name|lower|slice:"-5:" == ".jpeg" %}
+    <img src="{{ note.file.url }}" alt="Uploaded image">
+  
+  {% else %}
+    <p>⚠️ Preview not available for this file type.</p>
+  {% endif %}
+
+  <!-- AI Report Generator -->
+  <div class="ai-form" style="margin-top:2rem;padding:1.2rem;border:1px solid #e5e7eb;border-radius:12px;background:#f9fafb;">
+    <form method="POST">
+      {% csrf_token %}
+<div class="ai-buttons">
+  <button type="submit" name="report_type" value="doc">Generate Document Insights</button>
+  <button type="submit" name="report_type" value="soil">Generate Soil Test Report</button>
+  <button type="submit" name="report_type" value="crop">Generate Crop Disease Report</button>
+</div>
+    </form>
+
+    {% if ai_results %}
+      <div class="ai-output" style="margin-top:1.2rem;padding:1rem;background:#f9fafb;border-radius:10px;border:1px solid #e5e7eb;max-height:600px;overflow-y:auto;white-space:pre-wrap;word-wrap:break-word;">
+        <h3 style="margin-bottom:0.6rem;font-size:1rem;font-weight:600;color:#111827;">AI Generated Report:</h3>
+        <div style="font-size:0.95rem;line-height:1.6;color:#374151;">
+          {{ ai_results|safe }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <a href="{% url 'notes_list' %}" class="back">← Back to Documents</a>
+    {% if note.cached_ai_report %}
+      <a href="{% url 'download_ai_report' note.pk %}" class="download">⬇️ Download AI Report</a>
+    {% else %}
+      <span class="meta">⚠️ Generate a report first to enable download</span>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}{{ profile.user.username }}'s Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container mt-5">
+  <h2 class="text-center mb-4">{{ profile.user.username }}'s Profile</h2>
+
+  <div class="profile-header text-center">
+    {% if profile.profile_pic %}
+      <img src="{{ profile.profile_pic.url }}" class="profile-img" alt="Profile Picture">
+    {% else %}
+      <img src="/static/default-avatar.png" class="profile-img" alt="Default Picture">
+    {% endif %}
+    <h3>{{ profile.user.username }}</h3>
+    <p><strong>Email:</strong> {{ profile.user.email }}</p>
+  </div>
+
+  <div class="profile-info text-center mt-4">
+    <p>{{ profile.bio|linebreaks }}</p>
+  </div>
+
+  <div class="text-center mt-3">
+    <a href="{% url 'community' %}" class="btn btn-secondary">Back to Community</a>
+  </div>
+</div>
+
+<style>
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+  }
+
+  .profile-img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+  }
+
+  .profile-info p {
+    font-size: 1rem;
+    color: #333;
+  }
+</style>
+{% endblock %}

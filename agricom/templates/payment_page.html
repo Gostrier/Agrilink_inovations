@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width:700px;margin:50px auto;padding:30px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+  <h2 style="text-align:center;margin-bottom:25px;color:#2c3e50;">Payment</h2>
+
+  <div style="background:#f9f9f9;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);margin-bottom:20px;">
+    <h4>{{ listing.title }}</h4>
+    <p><strong>Farmer:</strong> {{ listing.user.username }}</p>
+    {% if listing.phone %}
+      <p><strong>Farmer Phone:</strong> {{ listing.phone }}</p>
+    {% endif %}
+    <p><strong>Quantity to Buy:</strong> {{ order_quantity }}</p>
+    <p><strong>Total Amount to Pay:</strong> KSh {{ total_price|floatformat:2 }}</p>
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="quantity" value="{{ order_quantity }}">
+    <input type="hidden" name="total_price" value="{{ total_price }}">
+    <button type="submit" style="width:100%;background:#3498db;color:white;padding:12px;font-size:16px;border:none;border-radius:6px;cursor:pointer;">
+      Pay Now (Coming Soon)
+    </button>
+  </form>
+
+</div>
+{% endblock %}

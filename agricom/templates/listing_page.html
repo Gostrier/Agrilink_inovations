@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if messages %}
+  <div id="messages-container" style="max-width:700px;margin:10px auto;">
+    {% for message in messages %}
+        {{ message }}
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<div style="max-width: 700px; margin: 50px auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+  <h2 style="text-align: center; margin-bottom: 25px; color: #2c3e50;">🌾 Farm to Market Listings</h2>
+
+  <form method="POST" style="margin-bottom: 40px;">
+    {% csrf_token %}
+
+    <div style="margin-bottom: 18px;">
+      <label for="id_role" style="font-weight: 600;">Listing Type</label>
+      <select name="role" id="id_role" required
+              style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;"
+              onchange="toggleInputs()">
+        <option value="">-- Select type --</option>
+        <option value="farmer"{% if request.POST.role == "farmer" %} selected{% endif %}>Farmer Listing</option>
+        <option value="buyer"{% if request.POST.role == "buyer" %} selected{% endif %}>Buyer Request</option>
+      </select>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <label style="font-weight: 600;">Title</label>
+      <input type="text" name="title" placeholder="e.g. Maize (white) - 90kg bag" required
+        value="{{ request.POST.title|default_if_none:'' }}"
+        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <label style="font-weight: 600;">Description</label>
+      <textarea name="description" rows="3" placeholder="Any extra details..."
+        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">{{ request.POST.description|default_if_none:'' }}</textarea>
+    </div>
+
+    <div id="phone_container" style="margin-bottom: 18px; display: none;">
+      <label style="font-weight: 600;">Phone Number (for Buyer Request)</label>
+      <input type="text" name="phone" placeholder="e.g. 0712345678"
+        value="{{ request.POST.phone|default_if_none:'' }}"
+        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+
+    <div id="price_container" style="margin-bottom: 18px;">
+      <label style="font-weight: 600;">Price (KSh per kg)</label>
+      <input type="number" step="0.01" min="0" name="price" placeholder="e.g. 1500.00"
+        value="{{ request.POST.price|default_if_none:'' }}"
+        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+
+    <div style="margin-bottom: 18px;">
+      <label style="font-weight: 600;">Quantity</label>
+      <input type="number" name="quantity" min="1" placeholder="e.g. 10" required
+        value="{{ request.POST.quantity|default_if_none:'' }}"
+        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px;">
+    </div>
+
+    <button type="submit"
+      style="width: 100%; background: #27ae60; color: white; font-size: 16px; padding: 12px; border: none; border-radius: 6px; cursor: pointer;">
+      Post Listing
+    </button>
+  </form>
+
+  <h4 style="color: #2c3e50; margin-bottom: 20px;">Available Listings</h4>
+
+  {% for listing in listings %}
+  <div style="background: #f9f9f9; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); margin-bottom: 15px;">
+    <h5 style="margin: 0 0 8px 0; color: #333;">{{ listing.title }}</h5>
+    <p style="margin: 0 0 5px 0;">{{ listing.description }}</p>
+
+    {% if listing.role == "farmer" %}
+      <p style="margin: 0; font-size: 15px;"><strong>Price:</strong> KSh {{ listing.price }} | <strong>Qty:</strong> {{ listing.quantity }}</p>
+      <div style="margin-top: 12px;">
+        <a href="{% url 'order_page' listing.id %}"
+           style="background: #27ae60; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none;">Choose</a>
+      </div>
+
+    {% elif listing.role == "buyer" %}
+      <p style="margin: 0; font-size: 15px;"><strong>Qty Requested:</strong> {{ listing.quantity }}</p>
+      <div style="margin-top: 12px;">
+        <a href="{% url 'buyer_available' listing.id %}"
+           style="background: #3498db; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none; margin-right: 10px;">Available</a>
+        <a href="{% url 'buyer_not_available' listing.id %}"
+           style="background: #e74c3c; color: white; padding: 8px 14px; border-radius: 6px; text-decoration: none;">Not Available</a>
+      </div>
+    {% endif %}
+
+    <small style="color: #777; display: block; margin-top: 8px;">By {{ listing.user.username }} ({{ listing.role|title }}) • {{ listing.created_at|date:"M d, Y H:i" }}</small>
+  </div>
+  {% empty %}
+    <p style="color: #cfb8b8; text-align: center;">No listings yet. Be the first to post!</p>
+  {% endfor %}
+
+</div>
+
+<script>
+  function toggleInputs() {
+    const role = document.getElementById('id_role').value;
+    const phoneContainer = document.getElementById('phone_container');
+    const priceContainer = document.getElementById('price_container');
+
+    if (role === 'buyer') {
+      phoneContainer.style.display = 'block';
+      priceContainer.style.display = 'none';
+    } else {
+      phoneContainer.style.display = 'none';
+      priceContainer.style.display = 'block';
+    }
+  }
+
+  window.onload = function() {
+    toggleInputs();
+
+    const messagesContainer = document.getElementById('messages-container');
+    if (messagesContainer) {
+      setTimeout(() => {
+        messagesContainer.style.display = 'none';
+      }, 5000);
+    }
+  };
+</script>
+
+{% endblock %}

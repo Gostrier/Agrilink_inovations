@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Create Research Room – AgriMarket Research Support{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100 bg-green">
+  <div class="card shadow-lg p-4 rounded-4 border-0" style="width: 460px;">
+    
+    <!-- Header -->
+    <h3 class="text-center mb-4 text-success fw-bold">🚀 Extension Officer's Office</h3>
+    
+    <!-- Form -->
+    <form method="POST">
+      {% csrf_token %}
+      
+      <!-- Room Name -->
+      <div class="mb-3">
+        <label for="name" class="form-label fw-semibold">Type of Service</label>
+        <input type="text" name="name" id="name" 
+               class="form-control form-control-lg rounded-3 shadow-sm" 
+               placeholder="e.g. Farmproduce/Market services" required>
+      </div>
+
+      <!-- Category -->
+      <div class="mb-3">
+        <label for="subject" class="form-label fw-semibold">Service Category</label>
+        <input type="text" name="subject" id="subject" 
+               class="form-control form-control-lg rounded-3 shadow-sm" 
+               placeholder="e.g. Types of breeds/Business Services" required>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-grid gap-2 mt-4">
+        <button type="submit" class="btn btn-warning btn-lg rounded-3 shadow-sm">
+          ✅ Create Room
+        </button>
+        <a href="{% url 'tutoring_home' %}" 
+           class="btn btn-outline-secondary btn-lg rounded-3 shadow-sm">
+          ❌ Cancel
+        </a>
+      </div>
+    </form>
+    
+    <!-- Footer Note -->
+<p class="text-muted text-center mt-4" style="font-size:0.9rem;">
+  Extension Officer's Office allow farmers and buyers to explore AI-powered insights and market data.  
+  Use categories like <strong>Crop Trends</strong>, <strong>Market Prices</strong>, or <strong>Supply Chain Opportunities</strong> to make informed agricultural and business decisions.
+</p>
+  </div>
+</div>
+{% endblock %}

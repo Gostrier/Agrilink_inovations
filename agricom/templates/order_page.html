@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width:700px;margin:50px auto;padding:30px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.08);font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+
+  <h2 style="text-align:center;margin-bottom:25px;color:#2c3e50;">Order Farmer's Listing</h2>
+
+  <div style="background:#f9f9f9;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,0.05);margin-bottom:20px;">
+    <h4>{{ listing.title }}</h4>
+    <p>{{ listing.description }}</p>
+    <p><strong>Price per Kg:</strong> KSh <span id="unit-price">{{ listing.price }}</span></p>
+    <p><strong>Available Quantity:</strong> {{ listing.quantity }}</p>
+    <p><strong>Farmer:</strong> {{ listing.user.username }}</p>
+    {% if listing.phone %}
+      <p><strong>Farmer Phone:</strong> {{ listing.phone }}</p>
+    {% endif %}
+  </div>
+
+  <form method="POST">
+    {% csrf_token %}
+    <div style="margin-bottom:18px;">
+      <label style="font-weight:600;">Quantity to Buy</label>
+      <input type="number" id="buy-quantity" name="quantity" min="1" max="{{ listing.quantity }}" value="{{ listing.quantity }}"
+             style="width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;">
+    </div>
+
+    <p><strong>Total Price:</strong> KSh <span id="total-price">{{ listing.price|floatformat:2|floatformat }}</span></p>
+
+    <button type="submit" style="width:100%;background:#27ae60;color:white;padding:12px;font-size:16px;border:none;border-radius:6px;cursor:pointer;">
+      Proceed to Payment
+    </button>
+  </form>
+
+</div>
+
+<script>
+  // Parse the Django variables as numbers to avoid JS errors
+  const unitPrice = parseFloat("{{ listing.price }}");
+  const maxQuantity = parseInt("{{ listing.quantity }}");
+  const quantityInput = document.getElementById('buy-quantity');
+  const totalPriceEl = document.getElementById('total-price');
+
+  // Initialize total price
+  totalPriceEl.textContent = (unitPrice * parseInt(quantityInput.value)).toFixed(2);
+
+  // Update total price when quantity changes
+  quantityInput.addEventListener('input', () => {
+    let qty = parseInt(quantityInput.value);
+    if (isNaN(qty) || qty < 1) qty = 1;
+    if (qty > maxQuantity) qty = maxQuantity;
+    quantityInput.value = qty; // ensures input doesn't exceed limits
+    totalPriceEl.textContent = (qty * unitPrice).toFixed(2);
+  });
+</script>
+{% endblock %}

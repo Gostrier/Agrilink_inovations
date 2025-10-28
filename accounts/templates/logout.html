@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Logged Out – AgriMarket{% endblock %}
+
+{% block content %}
+<div class="logout-container mt-5">
+  <h2>You have been logged out</h2>
+  <p class="mt-3">Thank you for using <strong>AgriMarket</strong>. See you again soon!</p>
+  
+  <div class="logout-actions mt-4">
+    <a href="{% url 'login' %}" class="btn btn-primary">Login Again</a>
+    <a href="{% url 'home' %}" class="btn btn-secondary">Go to Home</a>
+  </div>
+</div>
+
+<!-- Inline CSS and JavaScript -->
+<style>
+  .logout-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: green;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    font-size: 2rem;
+    color: black;
+  }
+
+  p {
+    font-size: 1.1rem;
+    color: black;
+  }
+
+  .logout-actions a {
+    text-decoration: none;
+    margin: 10px;
+    padding: 12px 24px;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+  }
+
+  .btn-primary {
+    background-color: #007bff;
+  }
+
+  .btn-primary:hover {
+    background-color: #0056b3;
+  }
+
+  .btn-secondary {
+    background-color: #6c757d;
+  }
+
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+
+  .logout-actions a:hover {
+    opacity: 0.9;
+  }
+</style>
+
+<script>
+  // Optional JavaScript to enhance the experience
+  document.querySelector('.btn-primary').addEventListener('click', function () {
+    alert('Redirecting to login page...');
+  });
+  document.querySelector('.btn-secondary').addEventListener('click', function () {
+    alert('Redirecting to home page...');
+  });
+</script>
+
+{% endblock %}

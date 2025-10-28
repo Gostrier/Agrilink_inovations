@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Farm Data – FarmToMarket AI{% endblock %}
+
+{% block content %}
+<style>
+  body {
+    background-color: #f9fafb;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  .form-container {
+    max-width: 520px;
+    margin: 3rem auto;
+    background: green;
+    padding: 2.2rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+  }
+  .form-container h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: black;
+  }
+  .form-container p {
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: black;
+  }
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #374151;
+    font-size: 0.95rem;
+  }
+  input[type="text"], input[type="file"], select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  input:focus, select:focus {
+    border-color: #16a34a;
+    box-shadow: 0 0 6px rgba(22,163,74,0.25);
+  }
+  .error {
+    color: #dc2626;
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+  }
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+  }
+  .form-actions a {
+    font-size: 0.85rem;
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .form-actions a:hover {
+    text-decoration: underline;
+  }
+  .btn-submit {
+    background: linear-gradient(to right, #16a34a, #22c55e);
+    color: white;
+    padding: 0.7rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .btn-submit:hover {
+    background: linear-gradient(to right, #15803d, #16a34a);
+    transform: scale(1.03);
+  }
+</style>
+
+<div class="form-container">
+  <h2>🌱 Upload Farm Data</h2>
+  <p>Choose whether you are uploading a soil image, crop image, or document for AI analysis.</p>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- Title -->
+    <div class="form-group">
+      <label for="id_title">Title</label>
+      <input type="text" name="title" id="id_title" 
+             value="{{ form.title.value|default:'' }}"
+             placeholder="Enter a title (e.g. 'Soil Test - Maize Farm')" required>
+      {% if form.title.errors %}
+        <p class="error">{{ form.title.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- File Type Selection -->
+    <div class="form-group">
+      <label for="id_filetype">Select File Type</label>
+      <select name="filetype" id="id_filetype" required>
+        <option value="">-- Choose file type --</option>
+        <option value="soil">🟤 Soil Image</option>
+        <option value="crop">🌿 Crop Image</option>
+        <option value="document">📄 Document</option>
+      </select>
+    </div>
+
+    <!-- File Upload -->
+    <div class="form-group">
+      <label for="id_file">Upload File</label>
+      <input type="file" name="file" id="id_file" required>
+      {% if form.file.errors %}
+        <p class="error">{{ form.file.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Buttons -->
+    <div class="form-actions">
+      <a href="{% url 'notes_list' %}">← Back to Notes</a>
+      <button type="submit" class="btn-submit">Upload & Analyze</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

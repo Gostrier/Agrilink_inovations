@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+{% block title %}AgriMarket – Shared Market Notes{% endblock %}
+
+{% block content %}
+<style>
+  .notes-container {
+    max-width: 600px;
+    margin: 3rem auto;
+    background: #ffff;
+    padding: 2.2rem;
+    border-radius: 16px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+  }
+
+  .notes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #f3f4f6;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .notes-header h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #1f2937;
+  }
+
+  .btn-upload {
+    background: linear-gradient(to right, #16a34a, #22c55e);
+    color: #fff;
+    padding: 0.6rem 1.4rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 14px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(22,163,74,0.3);
+    transition: transform 0.2s ease, background 0.3s ease;
+  }
+
+  .btn-upload:hover {
+    transform: translateY(-2px) scale(1.04);
+    background: linear-gradient(to right, #15803d, #16a34a);
+  }
+
+  .note-item {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    padding: 1.2rem 1.5rem;
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  }
+
+  .note-item:hover {
+    background: #f3f4f6;
+    box-shadow: 0 5px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+
+  .note-info p:first-child {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+    color: #111827;
+  }
+
+  .note-info p:last-child {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-top: 0.3rem;
+  }
+
+  .btn-preview, .btn-delete {
+    background: #dcfce7;
+    color: #15803d;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .btn-preview:hover {
+    background: green;
+    color: #166534;
+  }
+
+  .btn-delete {
+    background: #f87171;
+    color: white;
+    margin-left: 0.5rem;
+  }
+
+  .btn-delete:hover {
+    background: #f43f5e;
+  }
+
+  .no-notes {
+    text-align: center;
+    color: #6b7280;
+    font-size: 1.05rem;
+    padding: 3rem 1rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    border: 1px dashed #d1d5db;
+    margin-top: 1rem;
+  }
+
+  .no-notes a {
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 600;
+  }
+
+  /* Payment Section */
+  .extra-box {
+    background: greenyellow;
+    padding: 1.5rem;
+    margin-top: 2rem;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+  }
+
+  .extra-box h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1f2937;
+  }
+
+  .extra-box input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-top: 0.8rem;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+  }
+
+  .extra-box button {
+    width: 100%;
+    background: linear-gradient(to right, #16a34a, #22c55e);
+    color: red;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.3s;
+  }
+
+  .extra-box button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(to right, #15803d, #16a34a);
+  }
+
+  .extra-box p {
+    margin-top: 1rem;
+    color: #065f46;
+  }
+</style>
+
+<div class="notes-container">
+  <!-- Header -->
+  <div class="notes-header">
+    <h2>Agrilink AI – Uploaded Files</h2>
+    <a href="{% url 'notes_upload' %}" class="btn-upload">+ Upload file</a>
+  </div>
+
+  <!-- Notes List -->
+  <ul class="notes-list">
+    {% for note in notes %}
+      <li class="note-item">
+        <div class="note-info">
+          <p>{{ note.title }}</p>
+          <p>{{ note.uploaded_at|date:"M d, Y" }}</p>
+        </div>
+        <div class="note-actions">
+          {% if note.ai_report %}
+            <a href="{% url 'download_ai_report' note.pk %}" class="btn-download">Download AI Report</a>
+          {% endif %}
+          <a href="{% url 'preview_note' note.pk %}" class="btn-preview">Preview</a>
+          <form action="{% url 'delete_note' note.pk %}" method="POST" style="display:inline;">
+            {% csrf_token %}
+            <button type="submit" class="btn-delete">Delete</button>
+          </form>
+        </div>
+      </li>
+    {% empty %}
+      <p class="no-notes">
+        No files uploaded yet.  
+        <a href="{% url 'notes_upload' %}">Be the first to upload!</a>
+      </p>
+    {% endfor %}
+  </ul>
+
+  <!-- payment_page.html -->
+<div class="extra-box">
+  <h3>💳 Pay KSh 10 to View special services</h3>
+  <input type="text" id="payPhone" placeholder="Phone (2547XXXXXXXX)">
+  <button id="payButton">Pay KSh 10 with M-Pesa</button>
+  <p id="payMessage" style="margin-top:0.5rem; color:#065f46;"></p>
+</div>
+
+<div class="text-center mt-4 text-muted small">
+  AgriMarket | Secure Access to Farmers Info and special services
+</div>
+
+<script>
+document.getElementById("payButton").addEventListener("click", async () => {
+    const phone = document.getElementById("payPhone").value;
+    const messageEl = document.getElementById("payMessage");
+
+    if (!phone) {
+        messageEl.textContent = "Please enter your phone number!";
+        return;
+    }
+
+    messageEl.textContent = "Initiating payment of KSh 10...";
+
+    try {
+        const response = await fetch("{% url 'initiate_payment' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": "{{ csrf_token }}",
+            },
+            body: `phone=${phone}`
+        });
+
+        const data = await response.json();
+        if (data.ResponseCode === "0" || data.CheckoutRequestID) {
+            messageEl.textContent = "M-Pesa prompt sent. Enter PIN on your phone to complete payment.";
+        } else {
+            messageEl.textContent = "Payment failed: " + (data.errorMessage || JSON.stringify(data));
+        }
+    } catch (err) {
+        messageEl.textContent = "Error initiating payment: " + err;
+    }
+});
+</script>
+
+{% endblock %}

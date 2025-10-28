@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="max-width:600px;margin:40px auto;padding:25px;border-radius:10px;box-shadow:0 3px 8px rgba(0,0,0,0.1);background:#fff;">
+  <h3 style="color:#2c3e50;">Buyer Request: {{ listing.title }}</h3>
+  <p>{{ listing.description }}</p>
+  <p><strong>Contact Buyer:</strong> {{ buyer_phone }}</p>
+  <hr>
+  <p>You can call the buyer to coordinate delivery.</p>
+</div>
+
+
+{% endblock %}

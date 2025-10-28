@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="profile-container mt-5">
+  <h2 class="text-center mb-4">My Profile</h2>
+  
+  <div class="profile-header text-center">
+    {% if profile.profile_pic %}
+      <img src="{{ profile.profile_pic.url }}" class="profile-img" alt="Profile Picture">
+    {% endif %}
+    <h3>{{ user.username }}</h3>
+    <p>{{ user.email }}</p>
+  </div>
+
+  <div class="profile-info">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="form-group mb-3">
+        <label for="bio">Describe youself and leave your phone number and transactions here</label>
+        <textarea id="bio" name="bio" class="form-control" placeholder="Tell us about yourself">{{ profile.bio }}</textarea>
+      </div>
+
+      <div class="form-group mb-3">
+        <label for="profile_pic">Profile Picture</label>
+        <input type="file" name="profile_pic" id="profile_pic" class="form-control">
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Update Profile</button>
+    </form>
+  </div>
+
+  <div class="profile-actions mt-4 text-center">
+    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+  </div>
+</div>
+
+<!-- Inline CSS and JavaScript -->
+<style>
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: grey;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .profile-header {
+    margin-bottom: 20px;
+  }
+
+  .profile-img {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    margin-bottom: 10px;
+  }
+
+  .profile-header h3 {
+    font-size: 1.5rem;
+    color: black;
+  }
+
+  .profile-header p {
+    color: black;
+  }
+
+  .profile-info form {
+    background-color: lightslategray;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .form-group label {
+    font-weight: bold;
+    color: black;
+  }
+
+  textarea.form-control {
+    resize: none;
+    height: 150px;
+  }
+
+  .profile-actions a {
+    text-decoration: none;
+    margin: 0 10px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    color: #fff;
+  }
+
+  .profile-actions a.btn-danger {
+    background-color: #f44336;
+  }
+
+  .profile-actions a.btn-info {
+    background-color: #2196F3;
+  }
+
+  .profile-actions a:hover {
+    opacity: 0.9;
+  }
+</style>
+
+<script>
+  document.getElementById('profile_pic').addEventListener('change', function (event) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const imgElement = document.createElement('img');
+      imgElement.src = reader.result;
+      imgElement.classList.add('profile-img');
+      document.querySelector('.profile-header').appendChild(imgElement);
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  });
+</script>
+{% endblock %}

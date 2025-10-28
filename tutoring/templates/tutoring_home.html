@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Research Rooms – AgriMarketAI research Support{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center vh-100 bg-light">
+  <div class="card shadow-sm border-0 rounded-4 w-75" style="max-width: 600px;">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+      <h4 class="text-primary fw-bold mb-0">🏫 Research Rooms</h4>
+      <a href="{% url 'create_tutoring_room' %}" class="btn btn-success btn-sm shadow-sm rounded-pill px-3">
+        + Create Room
+      </a>
+    </div>
+
+    <!-- Room List -->
+    {% if rooms %}
+      <ul class="list-group list-group-flush">
+        {% for room in rooms %}
+          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+            <!-- Room Info -->
+            <div>
+              <p class="mb-1 fw-bold text-dark">{{ room.name }}</p>
+              <small class="text-muted d-block mb-1">
+                📌 Category: {{ room.subject }} • 👤 {{ room.created_by.username }} • 📅 {{ room.created_at|date:"M d, Y" }}
+              </small>
+              <p class="text-muted mb-0" style="font-size:0.85rem;">
+                Includes AI-generated research to strengthen understanding of farming practices, market dynamics, and agricultural regulations.
+              </p>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex gap-2">
+              <a href="{% url 'tutoring_room' room.id %}" class="btn btn-primary btn-sm rounded-3 px-3 shadow-sm">
+                Enter
+              </a>
+              <form method="POST" action="{% url 'delete_tutoring_room' room.id %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm rounded-3 px-3 shadow-sm"
+                        onclick="return confirm('Are you sure you want to delete this research room?');">
+                  Delete
+                </button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <!-- Empty State -->
+      <div class="alert alert-info text-center rounded-3 py-3 mt-3 shadow-sm">
+        🚀 No research rooms yet.  
+        <a href="{% url 'create_tutoring_room' %}" class="fw-bold text-decoration-none text-primary">Create one</a>  
+        To organize AI-powered research from agricultural guides, market reports and agricultural documents
+      </div>
+    {% endif %}
+    
+  </div>
+</div>
+{% endblock %}
